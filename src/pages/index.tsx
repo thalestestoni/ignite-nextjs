@@ -6,9 +6,13 @@ import Image from 'next/image';
 import { FiCalendar, FiUser } from 'react-icons/fi';
 
 import { getPrismicClient } from '../services/prismic';
+import Prismic from '@prismicio/client';
 
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
+
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 interface Post {
   uid?: string;
@@ -109,9 +113,39 @@ export default function Home({ postsPagination }: HomeProps) {
   )
 }
 
-// export const getStaticProps = async () => {
-//   // const prismic = getPrismicClient();
-//   // const postsResponse = await prismic.query(TODO);
+export const getStaticProps = async () => {
+  const prismic = getPrismicClient();
 
-//   // TODO
-// };
+  const response = await prismic.query(
+    Prismic.Predicates.at('document.type', 'post'),
+    { 
+      pageSize: 5,
+      fetch: ['post.title', 'post.subtitle', 'post.author'] 
+    }
+  );
+
+  const posts = response.results.map(post => {
+    return {
+      uid: post.uid,
+      first_publication_date: format(
+        new Date(post.first_publication_date), 
+        'dd MMM yyyy', 
+        { locale: ptBR }
+      ),
+      data: {
+        title: post.data.title,
+        subtitle: post.data.subtitle,
+        author: post.data.author
+      }
+    }
+  });
+
+  return {
+    props: {
+      postsPagination: {
+        next_page: response.next_page,
+        results: posts
+      }
+    }
+  }
+};
