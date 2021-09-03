@@ -34,7 +34,7 @@ interface HomeProps {
 }
 
 export default function Home({ postsPagination }: HomeProps) {
-  // const posts = postsPagination.results;
+  const posts = postsPagination.results;
   
   return (
     <>
@@ -55,59 +55,28 @@ export default function Home({ postsPagination }: HomeProps) {
 
       <main className={styles.contentContainer}>
         <div className={styles.posts}>
-          {/* {posts.map(post => ( */}
-            <Link href={`/post/1`}>
-              <a key={`1`}>
-                <strong>Como utilizar Hooks</strong>
-                <p>Pensando em sincronização em vez de ciclos de vida.</p>
+          {posts.map(post => (
+            <Link href={`/post/${post.uid}`}>
+              <a key={post.uid}>
+                <strong>{post.data.title}</strong>
+                <p>{post.data.subtitle}</p>
                 <div>
                   <span>
                     <FiCalendar />
-                    <time>15 Mar 2021</time>
+                    <time>{post.first_publication_date}</time>
                   </span>
                   <span>
                     <FiUser />
-                    <small>Thales Testoni</small>
+                    <small>{post.data.author}</small>
                   </span>
                 </div>
               </a>
             </Link>
-
-            <Link href={`/post/1`}>
-              <a key={`2`}>
-                <strong>Como utilizar Hooks</strong>
-                <p>Pensando em sincronização em vez de ciclos de vida.</p>
-                <div>
-                  <span>
-                    <FiCalendar />
-                    <time>15 Mar 2021</time>
-                  </span>
-                  <span>
-                    <FiUser />
-                    <small>Thales Testoni</small>
-                  </span>
-                </div>
-              </a>
-            </Link>
-
-            <Link href={`/post/1`}>
-              <a key={`3`}>
-                <strong>Como utilizar Hooks</strong>
-                <p>Pensando em sincronização em vez de ciclos de vida.</p>
-                <div>
-                  <span>
-                    <FiCalendar />
-                    <time>15 Mar 2021</time>
-                  </span>
-                  <span>
-                    <FiUser />
-                    <small>Thales Testoni</small>
-                  </span>
-                </div>
-              </a>
-            </Link>
-          {/* ))} */}
+          ))}
         </div>
+        <button className={styles.loadMorePosts}>
+          Carregar mais posts
+        </button>
       </main>
     </>
   )
