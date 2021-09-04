@@ -13,6 +13,8 @@ import styles from './home.module.scss';
 
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useState } from 'react';
+import ApiSearchResponse from '@prismicio/client/types/ApiSearchResponse';
 
 interface Post {
   uid?: string;
@@ -34,7 +36,31 @@ interface HomeProps {
 }
 
 export default function Home({ postsPagination }: HomeProps) {
-  const posts = postsPagination.results;
+  const [posts, setPosts] = useState(postsPagination.results);
+  const [nextPage, setNextPage] = useState(postsPagination.next_page);
+
+  async function handleNextPage() {
+    const response = await fetch(nextPage)
+      .then(response => response.json()
+      .then((data: ApiSearchResponse) => data));
+
+    const postsNextPage: Post[] = response.results.map(post => ({
+      uid: post.uid,
+      first_publication_date: format(
+        new Date(post.first_publication_date), 
+        'dd MMM yyyy', 
+        { locale: ptBR }
+      ),
+      data: {
+        title: post.data.title,
+        subtitle: post.data.subtitle,
+        author: post.data.author
+      } 
+    }));
+
+    setPosts([...posts, ...postsNextPage]);
+    setNextPage(response.next_page);
+  }
   
   return (
     <>
@@ -56,8 +82,8 @@ export default function Home({ postsPagination }: HomeProps) {
       <main className={styles.contentContainer}>
         <div className={styles.posts}>
           {posts.map(post => (
-            <Link href={`/post/${post.uid}`}>
-              <a key={post.uid}>
+            <Link key={post.uid} href={`/post/${post.uid}`}>
+              <a>
                 <strong>{post.data.title}</strong>
                 <p>{post.data.subtitle}</p>
                 <div>
@@ -74,9 +100,11 @@ export default function Home({ postsPagination }: HomeProps) {
             </Link>
           ))}
         </div>
-        <button className={styles.loadMorePosts}>
-          Carregar mais posts
-        </button>
+        { nextPage && (
+           <button className={styles.loadMorePosts} onClick={handleNextPage}>
+            Carregar mais posts
+          </button>
+        )}
       </main>
     </>
   )
@@ -93,7 +121,7 @@ export const getStaticProps = async () => {
     }
   );
 
-  const posts = response.results.map(post => {
+  const posts: Post[] = response.results.map(post => {
     return {
       uid: post.uid,
       first_publication_date: format(
@@ -115,6 +143,7 @@ export const getStaticProps = async () => {
         next_page: response.next_page,
         results: posts
       }
-    }
+    },
+    revalidate: 60 * 60 & 24 // 24 hours
   }
 };
