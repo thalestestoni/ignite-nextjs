@@ -1,1 +1,66 @@
-// TODO
+.bannerContainer {
+  position: relative;
+  height: 400px;
+  overflow: hidden;
+
+  img {
+    position: absolute;
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate( -50%, -50%);
+  }
+}
+
+.contentContainer {
+  max-width: 721px;
+  padding: 5rem 2rem;
+  margin: 0 auto;
+}
+
+.postHeader {
+  strong {
+    line-height: 3.625rem;
+    font-size: 3rem;
+  }
+
+  div {
+    margin-top: 1.5rem;
+
+    span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      color: var(--gray-100);
+
+      time, small {
+        margin-left: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      & + span {
+        margin-left: 1.5rem;
+      }
+    }
+  }
+}
+
+.postContentContainer {
+  strong {
+    font-size: 2.25rem;
+    display: inline-block;
+    margin: 3rem 0 2rem 0;
+  }
+
+  p {
+    text-align: justify;
+    text-justify: inter-word;
+
+    & + p {
+      margin-top: 1.5rem;
+    }
+  }
+}
