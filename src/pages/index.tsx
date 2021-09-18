@@ -82,8 +82,8 @@ export default function Home({ postsPagination }: HomeProps) {
       <main className={styles.contentContainer}>
         <div className={styles.posts}>
           {posts.map(post => (
-            <Link key={post.uid} href={`/post/${post.uid}`}>
-              <a>
+            <Link href={`/post/${post.uid}`}>
+              <a key={post.uid}>
                 <strong>{post.data.title}</strong>
                 <p>{post.data.subtitle}</p>
                 <div>
@@ -144,6 +144,6 @@ export const getStaticProps = async () => {
         results: posts
       }
     },
-    revalidate: 60 * 60 & 24 // 24 hours
+    revalidate: 60 * 60 * 24 // 24 hours
   }
 };
