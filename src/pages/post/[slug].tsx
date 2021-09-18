@@ -55,6 +55,12 @@ export default function Post({ post }: PostProps) {
 
   var readTime = Math.round(amountWordsInPost / averageWordsReadByMinute);
 
+  post.first_publication_date = format(
+    new Date(post.first_publication_date), 
+    'dd MMM yyyy',
+    { locale: ptBR }
+  );
+  
   return (
     <>
       <Head>
@@ -133,11 +139,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const response: Post = await prismic.getByUID('post', String(uid), {});
 
   const post: Post = {
-    first_publication_date: format(
-      new Date(response.first_publication_date), 
-      'dd MMM yyyy',
-      { locale: ptBR }
-    ),
+    first_publication_date: response.first_publication_date,
     data: {
       title: response.data.title,
       banner: {
