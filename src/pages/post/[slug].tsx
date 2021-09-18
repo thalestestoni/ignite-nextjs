@@ -58,7 +58,7 @@ export default function Post({ post }: PostProps) {
   return (
     <>
       <Head>
-        <title>spacetravling.</title>
+        <title>spacetraveling.</title>
       </Head>
 
       <Header />
