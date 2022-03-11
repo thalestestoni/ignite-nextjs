@@ -45,9 +45,11 @@ const mockedQueryReturn = {
 };
 
 const mockedGetByUIDReturn = {
+  uid: 'como-utilizar-hooks',
   first_publication_date: '2021-03-25T19:25:28+0000',
   data: {
     title: 'Como utilizar Hooks',
+    subtitle: 'Pensando em sincronização em vez de ciclos de vida',
     author: 'Joseph Oliveira',
     banner: {
       url:
@@ -251,7 +253,7 @@ describe('Post', () => {
     screen.getByText('Como utilizar Hooks');
     screen.getByText('25 mar 2021');
     screen.getByText('Joseph Oliveira');
-    screen.getByText('3 min');
+    screen.getByText('4 min');
 
     screen.getByText('Proin et varius');
     screen.getByText(/Nullam dolor sapien/);

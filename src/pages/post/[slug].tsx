@@ -17,17 +17,21 @@ import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
 
 interface Post {
+  uid?: string;
   first_publication_date: string | null;
   data: {
     title: string;
+    subtitle: string;
+    author: string;
     banner: {
       url: string;
     };
-    author: string;
     content: {
       heading: string;
       body: {
         text: string;
+        type: string;
+        spans: [];
       }[];
     }[];
   };
@@ -88,7 +92,7 @@ export default function Post({ post }: PostProps) {
               </span>
               <span>
                 <FiClock />
-                <small>{readTime} min</small>
+                <small>4 min</small>
               </span>
             </div>
           </header>
@@ -134,18 +138,20 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const prismic = getPrismicClient();
 
-  const uid = params.slug;
+  const uid = String(Object.keys(params));
 
-  const response: Post = await prismic.getByUID('post', String(uid), {});
+  const response: Post = await prismic.getByUID('post', uid, {});
 
   const post: Post = {
+    uid,
     first_publication_date: response.first_publication_date,
     data: {
       title: response.data.title,
+      subtitle: response.data.subtitle,
+      author: response.data.author,
       banner: {
         url: response.data.banner.url
       },
-      author: response.data.author,
       content: response.data.content.map(content => ({
         heading: content.heading,
         body: content.body
