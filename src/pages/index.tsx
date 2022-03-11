@@ -36,17 +36,7 @@ interface HomeProps {
 }
 
 export default function Home({ postsPagination }: HomeProps) {
-  const [posts, setPosts] = useState(
-    postsPagination.results.map(post => ({
-      ...post, 
-      first_publication_date: format(
-        new Date(post.first_publication_date), 
-        'dd MMM yyyy', 
-        { locale: ptBR }
-      )
-    }))
-  );
-
+  const [posts, setPosts] = useState(postsPagination.results);
   const [nextPage, setNextPage] = useState(postsPagination.next_page);
 
   async function handleNextPage() {
@@ -55,12 +45,17 @@ export default function Home({ postsPagination }: HomeProps) {
       .then((data: ApiSearchResponse) => data));
 
     const postsNextPage: Post[] = response.results.map(post => ({
-      ...post,
+      uid: post.uid,
       first_publication_date: format(
         new Date(post.first_publication_date), 
         'dd MMM yyyy', 
         { locale: ptBR }
-      )
+      ),
+      data: {
+        title: post.data.title,
+        subtitle: post.data.subtitle,
+        author: post.data.author
+      } 
     }));
 
     setPosts([...posts, ...postsNextPage]);
@@ -87,8 +82,8 @@ export default function Home({ postsPagination }: HomeProps) {
       <main className={styles.contentContainer}>
         <div className={styles.posts}>
           {posts.map(post => (
-            <Link href={`/post/${post.uid}`} key={post.uid}>
-              <a>
+            <Link href={`/post/${post.uid}`}>
+              <a key={post.uid}>
                 <strong>{post.data.title}</strong>
                 <p>{post.data.subtitle}</p>
                 <div>
@@ -118,7 +113,7 @@ export default function Home({ postsPagination }: HomeProps) {
 export const getStaticProps = async () => {
   const prismic = getPrismicClient();
 
-  const prismicApiResponse = await prismic.query(
+  const response = await prismic.query(
     Prismic.Predicates.at('document.type', 'post'),
     { 
       pageSize: 5,
@@ -126,9 +121,28 @@ export const getStaticProps = async () => {
     }
   );
 
+  const posts: Post[] = response.results.map(post => {
+    return {
+      uid: post.uid,
+      first_publication_date: format(
+        new Date(post.first_publication_date), 
+        'dd MMM yyyy', 
+        { locale: ptBR }
+      ),
+      data: {
+        title: post.data.title,
+        subtitle: post.data.subtitle,
+        author: post.data.author
+      }
+    }
+  });
+
   return {
     props: {
-      postsPagination: prismicApiResponse
+      postsPagination: {
+        next_page: response.next_page,
+        results: posts
+      }
     },
     revalidate: 60 * 60 * 24 // 24 hours
   }
